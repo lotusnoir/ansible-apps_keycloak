@@ -1,0 +1,28 @@
+---
+- name: "Get the cert from {{ item.name }}"
+  get_certificate:
+    host: "{{ item.name }}"
+    port: "{{ item.port }}"
+  run_once: true
+  register: cert
+
+#- debug: msg={{cert.cert}}
+#  tags:
+#    - certs
+
+- name: "copy cert in tmp file"
+  copy:
+    content: "{{ cert.cert }}"
+    dest: "/tmp/{{ item.filename }}.crt"
+    mode: 0644
+
+- name: Import freeipa certificate to the keystore
+  java_cert:
+    cert_path: "/tmp/{{ item.filename }}.crt"
+    cert_alias: "{{ item.filename }}"
+    keystore_path: "{{ java_home }}/lib/security/cacerts"
+    keystore_pass: changeit
+    keystore_create: true
+    state: present
+  notify:
+    - restart keycloak
