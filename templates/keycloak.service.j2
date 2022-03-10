@@ -9,8 +9,6 @@ Environment="JBOSS_HOME={{ keycloak_jboss_home }}"
 
 User={{ keycloak_service_user }}
 Group={{ keycloak_service_group }}
-#ExecStart={{ keycloak_jboss_home }}/bin/standalone.sh --server-config={{ keycloak_standalone_file }} -b={{ keycloak_bind_address }} -Djboss.http.port={{ keycloak_http_port }} -Djboss.https.port={{ keycloak_https_port }} -Djboss.management.http.port={{ keycloak_management_http_port }} -Djboss.management.https.port={{ keycloak_management_https_port }}
-#ExecStart={{ keycloak_jboss_home }}/bin/standalone.sh --server-config={{ keycloak_standalone_file }} -b={{ ansible_default_ipv4.address }} -Djboss.http.port={{ keycloak_http_port }} -Djboss.https.port={{ keycloak_https_port }} -Djboss.management.http.port={{ keycloak_management_http_port }} -Djboss.management.https.port={{ keycloak_management_https_port }} -Djboss.bind.address.private={{ ansible_default_ipv4.address }} -Djboss.socket.binding.port-offset=1000 -Djboss.server.name={{ keycloak_identifier }}
 ExecStart={{ keycloak_jboss_home }}/bin/standalone.sh -b=0.0.0.0 -bmanagement=0.0.0.0 -c standalone-ha.xml
 TimeoutStartSec=600
 TimeoutStopSec=600

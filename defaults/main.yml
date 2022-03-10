@@ -8,13 +8,14 @@ keycloak_postgresql_jdbc_url: "https://jdbc.postgresql.org/download/postgresql-{
 keycloak_base_path: /opt/keycloak
 keycloak_jboss_home: "{{ keycloak_base_path }}/keycloak-{{ keycloak_version }}"
 keycloak_config_dir: "{{ keycloak_jboss_home }}/standalone/configuration"
+keycloak_admin_password: "strongpasswd"
 
 ## PostgreSQL JDBC
 keycloak_postgresql_host: "10.64.37.200"
 keycloak_postgresql_port: 5432
 keycloak_postgresql_database: "keycloak"
 keycloak_postgresql_user: "keycloak"
-keycloak_postgresql_passwd: "{{ postgresql_usr_keycloak }}"
+keycloak_postgresql_passwd: "sqlpasswd"
 
 ### Configuration settings
 keycloak_service_user: keycloak
@@ -27,3 +28,7 @@ keycloak_management_http_port: 9990
 keycloak_management_https_port: 9993
 keycloak_admin_user: admin
 keycloak_java_opts: "-Xms512m -Xmx2048m -XX:MaxPermSize=768m"
+### Import certs from freeeipa server if exist
+#keycloak_freeipa_servers:
+#  - {name: freeipa-01.prod, port: 636, filename: freeipa-01}
+#  - {name: freeipa-02.prod, port: 636, filename: freeipa-02}

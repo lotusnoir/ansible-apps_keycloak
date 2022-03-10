@@ -58,14 +58,14 @@
         group: "{{ keycloak_service_group }}"
         state: directory
         mode: 0755
-    
+
     - name: download postgres jdbc driver
       get_url:
         url: "{{ keycloak_postgresql_jdbc_url }}"
         dest: "{{ keycloak_jboss_home }}/modules/system/layers/keycloak/org/postgresql/main/"
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_group }}"
-    
+
     - name: Ensure keycloak profile-config exists
       file:
         path: "{{ keycloak_jboss_home }}/standalone/configuration/profile.properties"
@@ -84,9 +84,10 @@
           - -u{{ keycloak_admin_user }}
           - -p{{ keycloak_admin_password }}
         creates: "{{ keycloak_config_dir }}/keycloak-add-user.json"
-    
+
     - include_tasks: freeipa_certs.yml
       with_items: "{{ keycloak_freeipa_servers }}"
+      when: keycloak_freeipa_servers is defined
 
 - name: create postgres jdbc driver module.xml
   template:
