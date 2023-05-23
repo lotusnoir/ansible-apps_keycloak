@@ -1,6 +1,6 @@
 ---
 - name: "Get the cert from {{ item.name }}"
-  get_certificate:
+  community.crypto.get_certificate:
     host: "{{ item.name }}"
     port: "{{ item.port }}"
   run_once: true
@@ -11,13 +11,13 @@
 #    - certs
 
 - name: "copy cert in tmp file"
-  copy:
+  ansible.builtin.copy:
     content: "{{ cert.cert }}"
     dest: "/tmp/{{ item.filename }}.crt"
     mode: 0644
 
 - name: Import freeipa certificate to the keystore
-  java_cert:
+  community.general.java_cert:
     cert_path: "/tmp/{{ item.filename }}.crt"
     cert_alias: "{{ item.filename }}"
     keystore_path: "{{ java_home }}/lib/security/cacerts"

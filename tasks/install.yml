@@ -1,42 +1,45 @@
 ---
 - name: check if all required variables are set
-  fail: msg="The variable keycloak_admin_password must be explicitly set"
+  ansible.builtin.fail: msg="The variable keycloak_admin_password must be explicitly set"
   when: keycloak_admin_password is not defined
 
 - name: Check for an existing deployment"
-  stat:
+  ansible.builtin.stat:
     path: "{{ keycloak_jboss_home }}"
   register: existing_deploy
 
-- when: not existing_deploy.stat.exists or keycloak_force_install|bool
+- name: "Install tasks"
+  when: not existing_deploy.stat.exists or keycloak_force_install|bool
   block:
     - name: "REPLACE - Stop the old keycloak service"
-      service:
+      ansible.builtin.service:
         name: keycloak
         state: stopped
       failed_when: false
       when: existing_deploy.stat.exists and keycloak_force_install|bool
 
     - name: "REPLACE - Remove the old Keycloak deployment"
-      file:
+      ansible.builtin.file:
         path: "{{ keycloak_jboss_home }}"
         state: absent
       when: existing_deploy.stat.exists and keycloak_force_install|bool
 
     - name: "Install dependencies"
-      package:
+      ansible.builtin.package:
         name:
           - python3-openssl
           - ca-certificates
+          - unzip
+          - tar
         state: present
 
     - name: create Keycloak group
-      group:
+      ansible.builtin.group:
         name: "{{ keycloak_service_group }}"
         system: true
 
     - name: create Keycloak user
-      user:
+      ansible.builtin.user:
         name: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_group }}"
         home: "{{ keycloak_base_path }}"
@@ -44,7 +47,7 @@
         system: true
 
     - name: extract Keycloak archive on target
-      unarchive:
+      ansible.builtin.unarchive:
         remote_src: true
         src: "{{ keycloak_url }}"
         dest: "{{ keycloak_base_path }}"
@@ -52,7 +55,7 @@
         group: "{{ keycloak_service_group }}"
 
     - name: create postgres jdbc driver directory
-      file:
+      ansible.builtin.file:
         path: "{{ keycloak_jboss_home }}/modules/system/layers/keycloak/org/postgresql/main"
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_group }}"
@@ -60,14 +63,15 @@
         mode: 0755
 
     - name: download postgres jdbc driver
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ keycloak_postgresql_jdbc_url }}"
         dest: "{{ keycloak_jboss_home }}/modules/system/layers/keycloak/org/postgresql/main/"
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_group }}"
+        mode: 0644
 
     - name: Ensure keycloak profile-config exists
-      file:
+      ansible.builtin.file:
         path: "{{ keycloak_jboss_home }}/standalone/configuration/profile.properties"
         state: touch
         owner: "{{ keycloak_service_user }}"
@@ -77,28 +81,30 @@
         mode: 0644
 
     - name: create Keycloak admin user
-      command:
+      ansible.builtin.command:
         argv:
           - "{{ keycloak_jboss_home }}/bin/add-user-keycloak.sh"
           - -rmaster
           - -u{{ keycloak_admin_user }}
           - -p{{ keycloak_admin_password }}
         creates: "{{ keycloak_config_dir }}/keycloak-add-user.json"
+      failed_when: false
 
-    - include_tasks: freeipa_certs.yml
+    - name: "Configure certs"
+      ansible.builtin.include_tasks: freeipa_certs.yml
       with_items: "{{ keycloak_freeipa_servers }}"
       when: keycloak_freeipa_servers is defined
 
-- name: create postgres jdbc driver module.xml
-  template:
+- name: "Create postgres jdbc driver module.xml"
+  ansible.builtin.template:
     src: "module.xml.j2"
     dest: "{{ keycloak_jboss_home }}/modules/system/layers/keycloak/org/postgresql/main/module.xml"
     owner: "{{ keycloak_service_user }}"
     group: "{{ keycloak_service_group }}"
     mode: 0644
 
-- name: configure standalone-ha.xml
-  template:
+- name: "Configure standalone-ha.xml"
+  ansible.builtin.template:
     src: standalone-ha.xml.j2
     dest: "{{ keycloak_jboss_home }}/standalone/configuration/standalone-ha.xml"
     mode: 0644
@@ -106,7 +112,7 @@
     - restart keycloak
 
 - name: configure systemd unit file for keycloak service
-  template:
+  ansible.builtin.template:
     src: keycloak.service.j2
     dest: /etc/systemd/system/keycloak.service
     owner: root
