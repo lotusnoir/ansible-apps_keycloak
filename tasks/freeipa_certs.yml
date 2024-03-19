@@ -10,7 +10,7 @@
 #  tags:
 #    - certs
 
-- name: "copy cert in tmp file"
+- name: "Copy cert in tmp file"
   ansible.builtin.copy:
     content: "{{ cert.cert }}"
     dest: "/tmp/{{ item.filename }}.crt"
@@ -25,4 +25,4 @@
     keystore_create: true
     state: present
   notify:
-    - restart keycloak
+    - "Restart keycloak"

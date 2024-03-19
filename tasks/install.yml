@@ -1,6 +1,7 @@
 ---
-- name: check if all required variables are set
-  ansible.builtin.fail: msg="The variable keycloak_admin_password must be explicitly set"
+- name: Check if all required variables are set
+  ansible.builtin.fail:
+    msg: "The variable keycloak_admin_password must be explicitly set"
   when: keycloak_admin_password is not defined
 
 - name: Check for an existing deployment"
@@ -33,12 +34,12 @@
           - tar
         state: present
 
-    - name: create Keycloak group
+    - name: Create Keycloak group
       ansible.builtin.group:
         name: "{{ keycloak_service_group }}"
         system: true
 
-    - name: create Keycloak user
+    - name: Create Keycloak user
       ansible.builtin.user:
         name: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_group }}"
@@ -46,7 +47,7 @@
         create_home: true
         system: true
 
-    - name: extract Keycloak archive on target
+    - name: Extract Keycloak archive on target
       ansible.builtin.unarchive:
         remote_src: true
         src: "{{ keycloak_url }}"
@@ -54,7 +55,7 @@
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_group }}"
 
-    - name: create postgres jdbc driver directory
+    - name: Create postgres jdbc driver directory
       ansible.builtin.file:
         path: "{{ keycloak_jboss_home }}/modules/system/layers/keycloak/org/postgresql/main"
         owner: "{{ keycloak_service_user }}"
@@ -62,7 +63,7 @@
         state: directory
         mode: 0755
 
-    - name: download postgres jdbc driver
+    - name: Download postgres jdbc driver
       ansible.builtin.get_url:
         url: "{{ keycloak_postgresql_jdbc_url }}"
         dest: "{{ keycloak_jboss_home }}/modules/system/layers/keycloak/org/postgresql/main/"
@@ -80,7 +81,7 @@
         access_time: preserve
         mode: 0644
 
-    - name: create Keycloak admin user
+    - name: Create Keycloak admin user
       ansible.builtin.command:
         argv:
           - "{{ keycloak_jboss_home }}/bin/add-user-keycloak.sh"
@@ -109,9 +110,9 @@
     dest: "{{ keycloak_jboss_home }}/standalone/configuration/standalone-ha.xml"
     mode: 0644
   notify:
-    - restart keycloak
+    - "Restart keycloak"
 
-- name: configure systemd unit file for keycloak service
+- name: Configure systemd unit file for keycloak service
   ansible.builtin.template:
     src: keycloak.service.j2
     dest: /etc/systemd/system/keycloak.service
@@ -119,5 +120,4 @@
     group: root
     mode: 0644
   notify:
-    - reload systemd
-    - restart keycloak
+    - "Restart keycloak"
