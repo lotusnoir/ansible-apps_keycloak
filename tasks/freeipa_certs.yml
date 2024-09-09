@@ -14,7 +14,7 @@
   ansible.builtin.copy:
     content: "{{ cert.cert }}"
     dest: "/tmp/{{ item.filename }}.crt"
-    mode: 0644
+    mode: '0644'
 
 - name: Import freeipa certificate to the keystore
   community.general.java_cert:

@@ -61,7 +61,7 @@
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_group }}"
         state: directory
-        mode: 0755
+        mode: '0755'
 
     - name: Download postgres jdbc driver
       ansible.builtin.get_url:
@@ -69,7 +69,7 @@
         dest: "{{ keycloak_jboss_home }}/modules/system/layers/keycloak/org/postgresql/main/"
         owner: "{{ keycloak_service_user }}"
         group: "{{ keycloak_service_group }}"
-        mode: 0644
+        mode: '0644'
 
     - name: Ensure keycloak profile-config exists
       ansible.builtin.file:
@@ -79,7 +79,7 @@
         group: "{{ keycloak_service_group }}"
         modification_time: preserve
         access_time: preserve
-        mode: 0644
+        mode: '0644'
 
     - name: Create Keycloak admin user
       ansible.builtin.command:
@@ -102,13 +102,13 @@
     dest: "{{ keycloak_jboss_home }}/modules/system/layers/keycloak/org/postgresql/main/module.xml"
     owner: "{{ keycloak_service_user }}"
     group: "{{ keycloak_service_group }}"
-    mode: 0644
+    mode: '0644'
 
 - name: "Configure standalone-ha.xml"
   ansible.builtin.template:
     src: standalone-ha.xml.j2
     dest: "{{ keycloak_jboss_home }}/standalone/configuration/standalone-ha.xml"
-    mode: 0644
+    mode: '0644'
   notify:
     - "Restart keycloak"
 
@@ -118,6 +118,6 @@
     dest: /etc/systemd/system/keycloak.service
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   notify:
     - "Restart keycloak"
