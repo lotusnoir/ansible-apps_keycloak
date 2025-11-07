@@ -6,10 +6,6 @@
   run_once: true
   register: cert
 
-#- debug: msg={{cert.cert}}
-#  tags:
-#    - certs
-
 - name: "Copy cert in tmp file"
   ansible.builtin.copy:
     content: "{{ cert.cert }}"

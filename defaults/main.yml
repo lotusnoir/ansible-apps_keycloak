@@ -20,15 +20,15 @@ keycloak_postgresql_passwd: "sqlpasswd"
 ### Configuration settings
 keycloak_service_user: keycloak
 keycloak_service_group: "{{ keycloak_service_user }}"
-#keycloak_standalone_file: standalone-ha.xml
-#keycloak_bind_address: 0.0.0.0
-#keycloak_http_port: 8080
-#keycloak_https_port: 8443
-#keycloak_management_http_port: 9990
-#keycloak_management_https_port: 9993
+# keycloak_standalone_file: standalone-ha.xml
+# keycloak_bind_address: 0.0.0.0
+# keycloak_http_port: 8080
+# keycloak_https_port: 8443
+# keycloak_management_http_port: 9990
+# keycloak_management_https_port: 9993
 keycloak_admin_user: admin
 keycloak_java_opts: "-Xms512m -Xmx2048m -XX:MaxPermSize=768m"
 ### Import certs from freeeipa server if exist
-#keycloak_freeipa_servers:
-#  - {name: freeipa-01.prod, port: 636, filename: freeipa-01}
-#  - {name: freeipa-02.prod, port: 636, filename: freeipa-02}
+# keycloak_freeipa_servers:
+#   - {name: freeipa-01.prod, port: 636, filename: freeipa-01}
+#   - {name: freeipa-02.prod, port: 636, filename: freeipa-02}
